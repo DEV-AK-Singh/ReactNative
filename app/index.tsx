@@ -1,91 +1,93 @@
-import React, { useState } from "react";
-import { Button, Text, View } from "react-native";
+import React from "react";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
-export default function TicTacToe() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
+const productData = [
+  {
+    id: 1,
+    name: "iPhone 15",
+    price: "$999",
+    rating: 4.8,
+    image: "https://picsum.photos/200/200?tech=1",
+  },
+  {
+    id: 2,
+    name: "MacBook Pro",
+    price: "$1999",
+    rating: 4.9,
+    image: "https://picsum.photos/200/200?tech=2",
+  },
+  {
+    id: 3,
+    name: "iPad Air",
+    price: "$599",
+    rating: 4.7,
+    image: "https://picsum.photos/200/200?tech=3",
+  },
+  {
+    id: 4,
+    name: "AirPods",
+    price: "$249",
+    rating: 4.8,
+    image: "https://picsum.photos/200/200?tech=4",
+  },
+  {
+    id: 5,
+    name: "Apple Watch",
+    price: "$399",
+    rating: 4.6,
+    image: "https://picsum.photos/200/200?tech=5",
+  },
+  {
+    id: 6,
+    name: "iMac",
+    price: "$1299",
+    rating: 4.9,
+    image: "https://picsum.photos/200/200?tech=6",
+  },
+];
 
-  const winner = calculateWinner(board);
-
-  const handlePress = (index: number) => {
-    if (board[index] || winner) return;
-
-    const newBoard = [...board];
-    newBoard[index] = isXNext ? "X" : "O";
-    setBoard(newBoard);
-    setIsXNext(!isXNext);
-  };
-
-  const resetGame = () => {
-    setBoard(Array(9).fill(null));
-    setIsXNext(true);
-  };
-
+export default function ProductScrollView() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", padding: 40 }}>
-      {/* Status */}
-      <View style={{ alignItems: "center", marginBottom: 30 }}>
-        <Text style={{ fontSize: 24, marginBottom: 10 }}>
-          {winner ? `Winner: ${winner}` : `Next: ${isXNext ? "X" : "O"}`}
-        </Text>
-      </View>
-
-      {/* Game grid - 3x3 */}
-      {[0, 1, 2].map((row) => (
-        <View
-          key={row}
-          style={{
-            flexDirection: "row",
-            marginBottom: 10,
-          }}
-        >
-          {[0, 1, 2].map((col) => {
-            const index = row * 3 + col;
-            return (
-              <View
-                key={col}
-                style={{
-                  flex: 1,
-                  marginHorizontal: 5,
-                }}
-              >
-                <Button
-                  title={board[index] || " "}
-                  onPress={() => handlePress(index)}
-                  color={board[index] === "X" ? "blue" : "red"}
-                />
-              </View>
-            );
-          })}
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {productData.map((item) => (
+        <View key={item.id} style={styles.card}>
+          <Image source={{ uri: item.image }} style={styles.image} />
+          <View style={styles.cardContent}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.price}>{item.price}</Text>
+            <Text style={styles.rating}>⭐ {item.rating}</Text>
+          </View>
         </View>
       ))}
-
-      {/* Reset button */}
-      <View style={{ marginTop: 30 }}>
-        <Button title="Reset Game" onPress={resetGame} color="green" />
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
-// Helper function
-function calculateWinner(squares: string[]) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8], // rows
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8], // columns
-    [0, 4, 8],
-    [2, 4, 6], // diagonals
-  ];
-
-  for (let line of lines) {
-    const [a, b, c] = line;
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
-}
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
+  contentContainer: { padding: 16 },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  cardContent: { padding: 16 },
+  name: { fontSize: 18, fontWeight: "bold" },
+  price: { fontSize: 16, color: "#2ecc71", marginTop: 4 },
+  rating: { fontSize: 14, color: "#f39c12", marginTop: 4 },
+});
