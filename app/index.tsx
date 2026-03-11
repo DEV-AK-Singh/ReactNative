@@ -1,52 +1,77 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-const categories = [
-  { id: 1, name: "Electronics", icon: "📱", color: "#3498db" },
-  { id: 2, name: "Fashion", icon: "👕", color: "#e74c3c" },
-  { id: 3, name: "Home", icon: "🏠", color: "#2ecc71" },
-  { id: 4, name: "Sports", icon: "⚽", color: "#f39c12" },
-  { id: 5, name: "Books", icon: "📚", color: "#9b59b6" },
-  { id: 6, name: "Toys", icon: "🎮", color: "#1abc9c" },
-  { id: 7, name: "Beauty", icon: "💄", color: "#e84342" },
-  { id: 8, name: "Automotive", icon: "🚗", color: "#34495e" },
+const sections = [
+  {
+    title: "Trending Now",
+    data: ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"],
+  },
+  {
+    title: "Recommended for You",
+    data: ["Product A", "Product B", "Product C", "Product D"],
+  },
+  {
+    title: "Recently Viewed",
+    data: ["Product X", "Product Y", "Product Z"],
+  },
+  {
+    title: "Deals of the Day",
+    data: ["Deal 1", "Deal 2", "Deal 3", "Deal 4", "Deal 5"],
+  },
+  {
+    title: "Recommended for You",
+    data: ["Product A", "Product B", "Product C", "Product D"],
+  },
+  {
+    title: "Recently Viewed",
+    data: ["Product X", "Product Y", "Product Z"],
+  },
+  {
+    title: "Deals of the Day",
+    data: ["Deal 1", "Deal 2", "Deal 3", "Deal 4", "Deal 5"],
+  },
 ];
 
-export default function HorizontalScrollView() {
+export default function NestedScrollView() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Categories</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={true}
-        contentContainerStyle={styles.horizontalContent}
-      >
-        {categories.map((item) => (
-          <View
-            key={item.id}
-            style={[styles.categoryCard, { backgroundColor: item.color }]}
+    <ScrollView style={styles.container}>
+      {sections.map((section, index) => (
+        <View key={index} style={styles.section}>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalSection}
           >
-            <Text style={styles.categoryIcon}>{item.icon}</Text>
-            <Text style={styles.categoryName}>{item.name}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+            {section.data.map((item, itemIndex) => (
+              <View key={itemIndex} style={styles.horizontalItem}>
+                <Text>{item}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
-  horizontalContent: { paddingRight: 16 },
-  categoryCard: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
+  container: { flex: 1, backgroundColor: "#fff" },
+  section: { marginVertical: 10 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 16,
+    marginBottom: 8,
+  },
+  horizontalSection: { paddingHorizontal: 16 },
+  horizontalItem: {
+    width: 120,
+    height: 120,
+    backgroundColor: "#f0f0f0",
     marginRight: 12,
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
-  categoryIcon: { fontSize: 32, marginBottom: 8 },
-  categoryName: { color: "white", fontWeight: "bold" },
 });
