@@ -1,69 +1,77 @@
-import { useState } from "react";
-import { Alert, Button, Pressable, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Button, Text, View } from "react-native";
 
-export default function Home() {
-  const [name, setName] = useState("");
+export default function CalculatorGrid() {
+  const [display, setDisplay] = useState("0");
+
+  const rows = [
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["C", "0", "=", "+"],
+  ];
+
+  const handlePress = (value: string) => {
+    if (value === "C") {
+      setDisplay("0");
+    } else if (value === "=") {
+      try {
+        setDisplay(eval(display).toString());
+      } catch {
+        setDisplay("Error");
+      }
+    } else {
+      setDisplay((prev) => (prev === "0" ? value : prev + value));
+    }
+  };
+
   return (
-    <>
+    <View style={{ flex: 1, padding: 20 }}>
+      {/* Display */}
       <View
         style={{
-          flex: 1,
-          gap: 16,
-          justifyContent: "center",
-          alignItems: "center",
+          backgroundColor: "#f0f0f0",
+          padding: 20,
+          marginTop: 40,
+          marginBottom: 20,
+          borderRadius: 5,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Home</Text>
-        <Text style={{ fontSize: 16 }}>Welcome to the home screen!</Text>
-        <TextInput
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter your name..."
-          style={{
-            height: 40,
-            width: 200,
-            paddingStart: 12,
-            paddingEnd: 12,
-            borderColor: "gray",
-            borderWidth: 1,
-            borderRadius: 4,
-          }}
-        />
+        <Text style={{ fontSize: 32, textAlign: "right" }}>{display}</Text>
+      </View>
+
+      {/* Buttons grid */}
+      {rows.map((row, rowIndex) => (
         <View
+          key={rowIndex}
           style={{
             flexDirection: "row",
-            gap: 8,
-            justifyContent: "center",
-            alignItems: "center",
+            marginBottom: 10,
           }}
         >
-          <Button
-            title="Greet me"
-            color="green"
-            onPress={() => {
-              Alert.alert("Hello", `Hello, ${name}!`);
-            }}
-          />
-          <Pressable
-            onPress={() => Alert.alert("Hello", "Press me!")}
-            onLongPress={() => Alert.alert("Hello", "Long press me!")}
-          >
-            <Text
+          {row.map((btn, colIndex) => (
+            <View
+              key={colIndex}
               style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: "blue",
-                backgroundColor: "orange",
-                padding: 12,
-                borderRadius: 16,
-                textAlign: "center",
+                flex: 1,
+                marginHorizontal: 5,
               }}
             >
-              Press me
-            </Text>
-          </Pressable>
+              <Button
+                title={btn === "C" ? "Clear" : btn}
+                onPress={() => handlePress(btn)}
+                color={
+                  btn === "C"
+                    ? "red"
+                    : ["/", "*", "-", "+", "="].includes(btn)
+                      ? "black"
+                      : "green"
+                }
+              />
+            </View>
+          ))}
         </View>
-      </View>
-    </>
+      ))}
+    </View>
   );
 }
