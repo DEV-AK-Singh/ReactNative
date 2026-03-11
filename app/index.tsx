@@ -1,77 +1,91 @@
 import React, { useState } from "react";
 import { Button, Text, View } from "react-native";
 
-export default function CalculatorGrid() {
-  const [display, setDisplay] = useState("0");
+export default function TicTacToe() {
+  const [board, setBoard] = useState(Array(9).fill(null));
+  const [isXNext, setIsXNext] = useState(true);
 
-  const rows = [
-    ["7", "8", "9", "/"],
-    ["4", "5", "6", "*"],
-    ["1", "2", "3", "-"],
-    ["C", "0", "=", "+"],
-  ];
+  const winner = calculateWinner(board);
 
-  const handlePress = (value: string) => {
-    if (value === "C") {
-      setDisplay("0");
-    } else if (value === "=") {
-      try {
-        setDisplay(eval(display).toString());
-      } catch {
-        setDisplay("Error");
-      }
-    } else {
-      setDisplay((prev) => (prev === "0" ? value : prev + value));
-    }
+  const handlePress = (index: number) => {
+    if (board[index] || winner) return;
+
+    const newBoard = [...board];
+    newBoard[index] = isXNext ? "X" : "O";
+    setBoard(newBoard);
+    setIsXNext(!isXNext);
+  };
+
+  const resetGame = () => {
+    setBoard(Array(9).fill(null));
+    setIsXNext(true);
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      {/* Display */}
-      <View
-        style={{
-          backgroundColor: "#f0f0f0",
-          padding: 20,
-          marginTop: 40,
-          marginBottom: 20,
-          borderRadius: 5,
-        }}
-      >
-        <Text style={{ fontSize: 32, textAlign: "right" }}>{display}</Text>
+    <View style={{ flex: 1, justifyContent: "center", padding: 40 }}>
+      {/* Status */}
+      <View style={{ alignItems: "center", marginBottom: 30 }}>
+        <Text style={{ fontSize: 24, marginBottom: 10 }}>
+          {winner ? `Winner: ${winner}` : `Next: ${isXNext ? "X" : "O"}`}
+        </Text>
       </View>
 
-      {/* Buttons grid */}
-      {rows.map((row, rowIndex) => (
+      {/* Game grid - 3x3 */}
+      {[0, 1, 2].map((row) => (
         <View
-          key={rowIndex}
+          key={row}
           style={{
             flexDirection: "row",
             marginBottom: 10,
           }}
         >
-          {row.map((btn, colIndex) => (
-            <View
-              key={colIndex}
-              style={{
-                flex: 1,
-                marginHorizontal: 5,
-              }}
-            >
-              <Button
-                title={btn === "C" ? "Clear" : btn}
-                onPress={() => handlePress(btn)}
-                color={
-                  btn === "C"
-                    ? "red"
-                    : ["/", "*", "-", "+", "="].includes(btn)
-                      ? "black"
-                      : "green"
-                }
-              />
-            </View>
-          ))}
+          {[0, 1, 2].map((col) => {
+            const index = row * 3 + col;
+            return (
+              <View
+                key={col}
+                style={{
+                  flex: 1,
+                  marginHorizontal: 5,
+                }}
+              >
+                <Button
+                  title={board[index] || " "}
+                  onPress={() => handlePress(index)}
+                  color={board[index] === "X" ? "blue" : "red"}
+                />
+              </View>
+            );
+          })}
         </View>
       ))}
+
+      {/* Reset button */}
+      <View style={{ marginTop: 30 }}>
+        <Button title="Reset Game" onPress={resetGame} color="green" />
+      </View>
     </View>
   );
+}
+
+// Helper function
+function calculateWinner(squares: string[]) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8], // rows
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8], // columns
+    [0, 4, 8],
+    [2, 4, 6], // diagonals
+  ];
+
+  for (let line of lines) {
+    const [a, b, c] = line;
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
