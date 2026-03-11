@@ -1,109 +1,123 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-const AdvancedRadioGroup = () => {
-  const [selectedPlan, setSelectedPlan] = useState("basic");
+const { width, height } = Dimensions.get("window");
 
-  const plans = [
+const GalleryModal = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const images = [
     {
-      id: "basic",
-      name: "Basic Plan",
-      price: "$9.99/month",
-      description: "Access to basic features",
-      disabled: false,
+      id: 1,
+      url: "https://picsum.photos/400/400?random=1",
+      title: "Mountain View",
     },
     {
-      id: "pro",
-      name: "Pro Plan",
-      price: "$19.99/month",
-      description: "Advanced features + priority support",
-      disabled: false,
+      id: 2,
+      url: "https://picsum.photos/400/400?random=2",
+      title: "Ocean Sunset",
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      price: "$49.99/month",
-      description: "Custom solutions for teams",
-      disabled: true, // This option is disabled
+      id: 3,
+      url: "https://picsum.photos/400/400?random=3",
+      title: "City Lights",
+    },
+    {
+      id: 4,
+      url: "https://picsum.photos/400/400?random=4",
+      title: "Forest Path",
+    },
+    {
+      id: 5,
+      url: "https://picsum.photos/400/400?random=5",
+      title: "Desert Dunes",
+    },
+    {
+      id: 6,
+      url: "https://picsum.photos/400/400?random=6",
+      title: "Northern Lights",
     },
   ];
 
-  const RadioCard = ({ plan }: { plan: (typeof plans)[number] }) => {
-    const isSelected = selectedPlan === plan.id;
-    const isDisabled = plan.disabled;
-
-    return (
-      <TouchableOpacity
-        style={[
-          styles.card,
-          isSelected && styles.selectedCard,
-          isDisabled && styles.disabledCard,
-        ]}
-        onPress={() => !isDisabled && setSelectedPlan(plan.id)}
-        disabled={isDisabled}
-        activeOpacity={isDisabled ? 1 : 0.7}
-      >
-        <View style={styles.cardContent}>
-          <View style={styles.radioSection}>
-            <View
-              style={[
-                styles.radioOuter,
-                isSelected && styles.selectedRadioOuter,
-                isDisabled && styles.disabledRadioOuter,
-              ]}
-            >
-              {isSelected && (
-                <View
-                  style={[
-                    styles.radioInner,
-                    isDisabled && styles.disabledRadioInner,
-                  ]}
-                />
-              )}
-            </View>
-          </View>
-
-          <View style={styles.textSection}>
-            <View style={styles.titleRow}>
-              <Text
-                style={[styles.planName, isDisabled && styles.disabledText]}
-              >
-                {plan.name}
-              </Text>
-              <Text
-                style={[styles.planPrice, isDisabled && styles.disabledText]}
-              >
-                {plan.price}
-              </Text>
-            </View>
-            <Text
-              style={[
-                styles.planDescription,
-                isDisabled && styles.disabledText,
-              ]}
-            >
-              {plan.description}
-            </Text>
-            {isDisabled && (
-              <Text style={styles.disabledBadge}>Currently Unavailable</Text>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+  const openImage = (image) => {
+    setSelectedImage(image);
+    setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Choose Your Plan</Text>
-      {plans.map((plan) => (
-        <RadioCard key={plan.id} plan={plan} />
-      ))}
-      <View style={styles.summary}>
-        <Text style={styles.summaryText}>
-          Selected Plan: {plans.find((p) => p.id === selectedPlan)?.name}
-        </Text>
-      </View>
+      <Text style={styles.galleryTitle}>Image Gallery</Text>
+
+      <ScrollView contentContainerStyle={styles.galleryGrid}>
+        {images.map((image) => (
+          <TouchableOpacity
+            key={image.id}
+            style={styles.imageThumbnail}
+            onPress={() => openImage(image)}
+          >
+            <Image source={{ uri: image.url }} style={styles.thumbnail} />
+            <View style={styles.thumbnailOverlay}>
+              <Text style={styles.thumbnailTitle}>{image.title}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.fullImageContainer}>
+          <TouchableOpacity
+            style={styles.closeImageButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.closeImageIcon}>✕</Text>
+          </TouchableOpacity>
+
+          {selectedImage && (
+            <>
+              <Image
+                source={{ uri: selectedImage.url }}
+                style={styles.fullImage}
+              />
+
+              <View style={styles.imageInfo}>
+                <Text style={styles.imageTitle}>{selectedImage.title}</Text>
+
+                <View style={styles.imageActions}>
+                  <TouchableOpacity style={styles.imageAction}>
+                    <Text style={styles.actionIcon}>❤️</Text>
+                    <Text style={styles.actionText}>Like</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.imageAction}>
+                    <Text style={styles.actionIcon}>💬</Text>
+                    <Text style={styles.actionText}>Comment</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.imageAction}>
+                    <Text style={styles.actionIcon}>⬇️</Text>
+                    <Text style={styles.actionText}>Save</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -111,107 +125,98 @@ const AdvancedRadioGroup = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  header: {
+  galleryTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    padding: 20,
     color: "#333",
   },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    marginBottom: 12,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  selectedCard: {
-    borderWidth: 2,
-    borderColor: "#007AFF",
-    backgroundColor: "#F0F8FF",
-  },
-  disabledCard: {
-    opacity: 0.6,
-    backgroundColor: "#f0f0f0",
-  },
-  cardContent: {
+  galleryGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 10,
   },
-  radioSection: {
-    marginRight: 15,
+  imageThumbnail: {
+    width: (width - 30) / 2,
+    height: 150,
+    margin: 5,
+    borderRadius: 10,
+    overflow: "hidden",
   },
-  radioOuter: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#999",
+  thumbnail: {
+    width: "100%",
+    height: "100%",
+  },
+  thumbnailOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    padding: 8,
+  },
+  thumbnailTitle: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  fullImageContainer: {
+    flex: 1,
+    backgroundColor: "black",
+  },
+  closeImageButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 1,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.3)",
     justifyContent: "center",
     alignItems: "center",
   },
-  selectedRadioOuter: {
-    borderColor: "#007AFF",
-  },
-  disabledRadioOuter: {
-    borderColor: "#ccc",
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#007AFF",
-  },
-  disabledRadioInner: {
-    backgroundColor: "#999",
-  },
-  textSection: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  planName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  planPrice: {
-    fontSize: 16,
+  closeImageIcon: {
+    color: "white",
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#007AFF",
   },
-  planDescription: {
-    fontSize: 14,
-    color: "#666",
+  fullImage: {
+    width: width,
+    height: height * 0.7,
+    resizeMode: "contain",
   },
-  disabledText: {
-    color: "#999",
+  imageInfo: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    padding: 20,
   },
-  disabledBadge: {
-    marginTop: 8,
+  imageTitle: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+  imageActions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  imageAction: {
+    alignItems: "center",
+  },
+  actionIcon: {
+    fontSize: 24,
+    marginBottom: 5,
+  },
+  actionText: {
+    color: "white",
     fontSize: 12,
-    color: "#ff3b30",
-    fontWeight: "600",
-  },
-  summary: {
-    marginTop: 20,
-    padding: 16,
-    backgroundColor: "white",
-    borderRadius: 8,
-  },
-  summaryText: {
-    fontSize: 16,
-    color: "#333",
   },
 });
 
-export default AdvancedRadioGroup;
+export default GalleryModal;
